@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Offset> _points = <Offset>[];
+  List<Offset> points = <Offset>[];
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +31,13 @@ class _HomePageState extends State<HomePage> {
                     context.findRenderObject() as RenderBox;
                     Offset _localPosition =
                     renderBox.globalToLocal(details.globalPosition);
-                    _points = List.from(_points)..add(_localPosition);
+                    points = List.from(points)..add(_localPosition);
                   });
                 },
                 onPanEnd: (DragEndDetails details) =>
-                    _points.add(Offset(double.infinity, double.infinity)),
+                    points.add(Offset(double.infinity, double.infinity)),
                 child: CustomPaint(
-                  painter: Signature(points: _points),
+                  painter: Signature(points: points),
                   size: Size.infinite,
                 ),
               ),
@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.only(top: 500.0,left: 25),
                 child: Row(
                   children: [
-                    ElevatedButton(onPressed: ()=>_points.clear(), child: Row(
+                    ElevatedButton(onPressed: ()=>points.clear(), child: Row(
                       children: const [
                         Text('Clear'),
                         Icon(Icons.clear),

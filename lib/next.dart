@@ -1,3 +1,4 @@
+import 'package:drawing_test/signature.dart';
 import 'package:flutter/material.dart';
 
 class Next extends StatefulWidget {
@@ -9,42 +10,71 @@ class Next extends StatefulWidget {
 
 class _NextState extends State<Next> {
   final GlobalKey _key = GlobalKey();
-    // Coordinates
+  List<Offset> points = <Offset>[];
   double? _x, _y;
-    void _getOffset(GlobalKey key) {
+
+  void _getOffset(GlobalKey key) {
     RenderBox? box = key.currentContext?.findRenderObject() as RenderBox?;
-    Offset? position = box?.localToGlobal(Offset.zero);
-    if (position != null) {
+    Offset? points = box?.localToGlobal(Offset.zero);
+    if (points != null) {
       setState(() {
-        _x = position.dx;
-        _y = position.dy;
+        _x = points.dx;
+        _y = points.dy;
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Kindacode.com'),
+      ),
+      body: Center(
         child: Stack(children: [
+          // Positioned(
+          //   top: 80,
+          //   left: 25,
+          //   // The amber box
+          //   child: Container(
+          //     key: _key,
+          //     width: 200,
+          //     height: 200,
+          //     padding: const EdgeInsets.all(30),
+          //     color: Colors.amber,
+          //     child: Text(
+          //       _x != null
+          //           ? "X: $_x, \nY: $_y"
+          //           : 'Press the button to calculate',
+          //       style: const TextStyle(fontSize: 24),
+          //     ),
+          //   ),
+          // ),
           Positioned(
-            top: 100,
-            left: 25,
-            // The amber box
-            child: Container(
-              key: _key,
-              width: 200,
-              height: 300,
-              padding: const EdgeInsets.all(30),
-              color: Colors.amber,
-              child: Text(
-                _x != null
-                    ? "X: $_x, \nY: $_y"
-                    : 'Press the button to calculate',
-                style: const TextStyle(fontSize: 24),
+            child: GestureDetector(
+              onPanUpdate: (DragUpdateDetails details) {
+                setState(() {
+                  RenderBox? renderBox =
+                      context.findRenderObject() as RenderBox;
+                  Offset _localPosition =
+                      renderBox.globalToLocal(details.globalPosition);
+                  points = List.from(points)..add(_localPosition);
+                });
+              },
+              onPanEnd: (DragEndDetails details) =>
+                  points.add(Offset(double.infinity, double.infinity)),
+              child: Column(
+                children: [
+                  CustomPaint(
+                    painter: Signature(points: points),
+                    size: Size.infinite,
+                  ),
+                ],
               ),
             ),
           ),
-        ]
-        ),
+        ]),
+      ),
       floatingActionButton: FloatingActionButton(
           onPressed: () => _getOffset(_key),
           child: const Icon(Icons.calculate)),
